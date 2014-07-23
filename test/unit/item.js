@@ -49,10 +49,32 @@ describe('Item', function(){
     it('should return all the items from the database', function(done){
       var tv = new Item('tv', 'living room', '7/14/2014', '1', '600');
       tv.save(function(){
-        Item.find(function(items){
+        Item.find({}, function(items){
           expect(items).to.be.ok;
           expect(items).to.have.length(1);
           done();
+        });
+      });
+    });
+    it('should return certain items from the database', function(done){
+      var tv = new Item('tv', 'living room', '7/14/2014', '1', '600');
+      var couch = new Item('couch', 'living room', '5/14/2014', '1', '1200');
+      var chair = new Item('chair', 'living room', '6/14/2014', '2', '500');
+      tv.save(function(){
+        couch.save(function(){
+          chair.save(function(){
+            Item.find({name:'couch'}, function(items){
+              //console.log(items);
+              expect(items).to.be.ok;
+              expect(items).to.have.length(1);
+              Item.find({}, function(items1){
+                //console.log(items1);
+                expect(items1).to.be.ok;
+                expect(items1).to.have.length(3);
+                done();
+              });
+            });
+          });
         });
       });
     });
