@@ -1,16 +1,23 @@
-/* global describe, it, before */
+/* global describe, it, before, beforeEach */
 /* jshint expr:true */
 
 'use strict';
 
 var expect = require('chai').expect;
-var Item;
 var connect = require('../../app/lib/mongodb');
+var Mongo = require('mongodb');
+var Item;
 
 describe('Item', function(){
   before(function(done){
     connect('home-inventory-test', function(){
       Item = require('../../app/models/item');
+      done();
+    });
+  });
+
+  beforeEach(function(done){
+    global.mongodb.collection('items').remove(function(){
       done();
     });
   });
@@ -32,10 +39,24 @@ describe('Item', function(){
     it('should save an item to the mongo database', function(done){
       var tv = new Item('tv', 'living room', '7/14/2014', '1', '600');
       tv.save(function(){
-        expect(tv._id).to.be.ok;
+        expect(tv._id).to.be.instanceof(Mongo.ObjectID);
         done();
       });
     });
   });
+
+  describe('.find', function(){
+    it('should return all the items from the database', function(done){
+      var tv = new Item('tv', 'living room', '7/14/2014', '1', '600');
+      tv.save(function(){
+        Item.find(function(items){
+          expect(items).to.be.ok;
+          expect(items).to.have.length(1);
+          done();
+        });
+      });
+    });
+  });
+
 
 });

@@ -17,4 +17,9 @@ Item.prototype.save = function(cb){
   });
 };
 
+Item.find = function(cb){
+  cItem.find().toArray(function(err, items){
+    cb(items);
+  });
+};
 module.exports = Item;
